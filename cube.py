@@ -68,16 +68,18 @@ class Cube:
     
     FACES_IN_A_CUBE = 6
 
-    def __init__(self, size: int) -> None:
+    def __init__(self, size: int, cube: list[list[list[Colour]]] = None) -> None:
         """
-        Initialises the cube in the completed state.
+        Initialises the cube.
         :param size: The cube created will have faces that are <size>x<size> (e.g. (3x3)).
                      Must be >= 1.
+        :param cube: If provided, the cube is initialised to this 3-dimensional list.
+                     If not, the cube is initialised in a completed state.
         """
         if size <= 0:
             raise ValueError("Invalid size")
         self.size: int = size
-        self._cube: list[list[list[Colour]]] = self.initialise_cube()
+        self._cube: list[list[list[Colour]]] = cube or self.initialise_cube()
 
     def __getitem__(self, face: int) -> list[list[Colour]]:
         return self._cube[face]
@@ -88,6 +90,12 @@ class Cube:
     def initialise_cube(self) -> list[list[list[Colour]]]:
         """ Returns a completed cube. """
         return [[[colour] * self.size for _ in range(self.size)] for colour in Colour]
+
+    def get_cube(self) -> list[list[list[Colour]]]:
+        return self._cube
+
+    def set_cube(self, cube: list[list[list[Colour]]]):
+        self._cube = cube
 
     def rotate_x(self, column: int, direction: ColumnMove) -> None:
         """
