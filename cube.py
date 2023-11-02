@@ -33,8 +33,8 @@ class ColumnMove(Enum):
 
 class RotateMove(Enum):
     """ Directions a face of the cube can be rotated in. """
-    LEFT = 1
-    RIGHT = 2
+    ANTICLOCKWISE = 1
+    CLOCKWISE = 2
 
 
 class Cube:
@@ -120,11 +120,11 @@ class Cube:
 
         # Leftmost column was rotated, so face 3 was rotated
         if column == 0:
-            rotate_face_direction = RotateMove.LEFT if direction == ColumnMove.UP else RotateMove.RIGHT
+            rotate_face_direction = RotateMove.ANTICLOCKWISE if direction == ColumnMove.UP else RotateMove.CLOCKWISE
             self._rotate_face(3, rotate_face_direction)
         # Rightmost column was rotated, so face 1 was rotated
         elif column == self.size - 1:
-            rotate_face_direction = RotateMove.RIGHT if direction == ColumnMove.UP else RotateMove.LEFT
+            rotate_face_direction = RotateMove.CLOCKWISE if direction == ColumnMove.UP else RotateMove.ANTICLOCKWISE
             self._rotate_face(1, rotate_face_direction)
 
     def rotate_y(self, row: int, direction: RowMove) -> None:
@@ -156,11 +156,11 @@ class Cube:
 
         # Top row was rotated, so top face was rotated
         if row == 0:
-            rotate_face_direction = RotateMove.RIGHT if direction == RowMove.LEFT else RotateMove.LEFT
+            rotate_face_direction = RotateMove.CLOCKWISE if direction == RowMove.LEFT else RotateMove.ANTICLOCKWISE
             self._rotate_face(4, rotate_face_direction)
         # Bottom row was rotated, so bottom face was rotated
         elif row == self.size - 1:
-            rotate_face_direction = RotateMove.LEFT if direction == RowMove.LEFT else RotateMove.RIGHT
+            rotate_face_direction = RotateMove.ANTICLOCKWISE if direction == RowMove.LEFT else RotateMove.CLOCKWISE
             self._rotate_face(5, rotate_face_direction)
 
     def rotate_z(self, column: int, direction: ColumnMove) -> None:
@@ -194,11 +194,11 @@ class Cube:
 
         # Leftmost column was rotated, so face 0 was rotated
         if column == 0:
-            rotate_face_direction = RotateMove.LEFT if direction == ColumnMove.UP else RotateMove.RIGHT
+            rotate_face_direction = RotateMove.ANTICLOCKWISE if direction == ColumnMove.UP else RotateMove.CLOCKWISE
             self._rotate_face(0, rotate_face_direction)
         # Rightmost column was rotated, so face 2 was rotated
         elif column == self.size - 1:
-            rotate_face_direction = RotateMove.RIGHT if direction == ColumnMove.UP else RotateMove.LEFT
+            rotate_face_direction = RotateMove.CLOCKWISE if direction == ColumnMove.UP else RotateMove.ANTICLOCKWISE
             self._rotate_face(2, rotate_face_direction)
 
     def _rotate_face(self, face: int, direction: RotateMove) -> None:
@@ -212,12 +212,12 @@ class Cube:
         :param direction: Whether to rotate the face left or right.
         """
         # Store each column in the face
-        columns = [None] * self.size
+        columns = []
         for i in range(self.size):
-            columns[i] = self.get_column(face, i)
+            columns.append(self.get_column(face, i))
 
         # Write the stored columns to the rows
-        if direction == RotateMove.LEFT:
+        if direction == RotateMove.ANTICLOCKWISE:
             for row in range(self.size):
                 # Assign to rows by iterating through columns list in reverse order
                 self._cube[face][row] = columns[self.size - 1 - row]
@@ -242,7 +242,7 @@ class Cube:
             for i in range(self.size):
                 self._cube[face][row][i] = new_row_list[self.size - 1 - i]
 
-    def get_column(self, face: int, column: int) -> list:
+    def get_column(self, face: int, column: int) -> list[Colour]:
         """
         Given a face and a column number, returns a list representing that column.
 
@@ -251,9 +251,9 @@ class Cube:
         :param face: The face of the cube, 0-indexed.
         :param column: The column within the face, 0-indexed.
         """
-        column_list = [None] * self.size
+        column_list = []
         for row in range(self.size):
-            column_list[row] = self._cube[face][row][column]
+            column_list.append(self._cube[face][row][column])
         return column_list
 
     def _set_column(self, face: int, column: int, new_column_list: list[Colour], reverse: bool = False) -> None:
