@@ -91,6 +91,9 @@ class Cube:
     def __eq__(self, other: Cube) -> bool:
         return self._cube == other._cube
 
+    def __iter__(self):
+        return CubeIterator(self)
+
     def get_size(self) -> int:
         return self._size
 
@@ -397,10 +400,36 @@ class Cube:
         return output[:-1]  # Exclude final newline character
 
 
+class CubeIterator:
+    def __init__(self, cube: Cube) -> None:
+        self._cube: Cube = cube
+        self._current_face: int = 0
+        self._current_row: int = 0
+        self._current_square: int = 0
+
+    def __iter__(self):
+        return self
+
+    def __next__(self) -> Colour:
+        if self._current_face >= self._cube.FACES_IN_A_CUBE:
+            raise StopIteration
+
+        cube_list = self._cube.get_cube()
+        square: Colour = cube_list[self._current_face][self._current_row][self._current_square]
+
+        self._current_square += 1
+        if self._current_square >= self._cube.get_size():
+            self._current_square = 0
+            self._current_row += 1
+            if self._current_row >= self._cube.get_size():
+                self._current_row = 0
+                self._current_face += 1
+
+        return square
+
+
 if __name__ == '__main__':
     test_cube = Cube(3)
-    # test_cube[3][0][1] = Colour.BLUE
 
-    test_cube.rotate_z(3, ColumnMove.UP)
-
-    test_cube.display_cube()
+    for square in test_cube:
+        print(square)
