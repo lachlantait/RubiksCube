@@ -125,6 +125,24 @@ class Cube:
     def get_square(self, face: int, row: int, column: int) -> Colour:
         return self._cube[face][row][column]
 
+    def get_string_representation(self) -> str:
+        output = ""
+        for square in self:
+            match square:
+                case Colour.GREEN:
+                    output += "G"
+                case Colour.RED:
+                    output += "R"
+                case Colour.BLUE:
+                    output += "B"
+                case Colour.ORANGE:
+                    output += "O"
+                case Colour.WHITE:
+                    output += "W"
+                case Colour.YELLOW:
+                    output += "Y"
+        return output
+
     def set_cube(self, cube: list[list[list[Colour]]]):
         self._cube = cube
 
@@ -431,5 +449,4 @@ class CubeIterator:
 if __name__ == '__main__':
     test_cube = Cube(3)
 
-    for square in test_cube:
-        print(square)
+    print(test_cube.get_string_representation())
