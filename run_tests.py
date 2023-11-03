@@ -45,9 +45,12 @@ class PatternTests(unittest.TestCase):
                 [Colour.ORANGE, Colour.BLUE, Colour.YELLOW]
             ]
         ]
-        expected_cube = Cube(3, expected_cube_list)
-
+        expected_cube = Cube(3, cube_list=expected_cube_list)
         self.assertEqual(test_cube, expected_cube, "The cubes don't match!")
+
+        expected_cube_string = "YWWYGOGRGBRRGRGRRRBBWRBWBBBGYOGOGOOWGOROWWOWWYYYBYYOBY"
+        expected_cube = Cube(3, string_repr=expected_cube_string)
+        self.assertEqual(test_cube, expected_cube, "Creating a cube from a string representation doesn't work")
 
 
 if __name__ == '__main__':

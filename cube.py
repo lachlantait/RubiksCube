@@ -71,22 +71,36 @@ class Cube:
     
     FACES_IN_A_CUBE = 6
 
-    def __init__(self, size: int, cube: list[list[list[Colour]]] | None = None) -> None:
+    def __init__(self, size: int, *,
+                 cube_list: list[list[list[Colour]]] | None = None,
+                 string_repr: str | None = None
+                 ) -> None:
         """
         Initialises the cube.
+
+        If neither <cube> nor <string_repr> are provided, the cube is initialised in the completed state.
+
         :param size: The cube created will have faces that are <size>x<size> (e.g. (3x3)).
                      Must be >= 1.
-        :param cube: If provided, the cube is initialised to this 3-dimensional list.
-                     If not, the cube is initialised in a completed state.
+        :param cube_list: If provided, the cube is initialised to this 3-dimensional list.
+        :param string_repr: If provided (and <cube> is not),
+                            the cube is initialised using this string representation of a cube.
         """
         if size <= 0:
             raise ValueError("Invalid size")
         self._size: int = size
-        self._cube: list[list[list[Colour]]] = cube or self.initialise_cube()
+
+        self._cube: list[list[list[Colour]]] | None = None
+        if cube_list:
+            self._cube = cube_list
+        elif string_repr:
+            self._cube = Cube.create_cube_from_string_representation(self._size, string_repr)
+        else:
+            self._cube = Cube.create_completed_cube(self._size)
 
     def __len__(self):
         """ Returns the amount of squares in the cube. """
-        return self.FACES_IN_A_CUBE * self._size * self._size
+        return Cube.FACES_IN_A_CUBE * self._size * self._size
 
     def __eq__(self, other: Cube) -> bool:
         return self._cube == other._cube
@@ -128,19 +142,7 @@ class Cube:
     def get_string_representation(self) -> str:
         output = ""
         for square in self:
-            match square:
-                case Colour.GREEN:
-                    output += "G"
-                case Colour.RED:
-                    output += "R"
-                case Colour.BLUE:
-                    output += "B"
-                case Colour.ORANGE:
-                    output += "O"
-                case Colour.WHITE:
-                    output += "W"
-                case Colour.YELLOW:
-                    output += "Y"
+            output += Cube.get_string_from_colour(square)
         return output
 
     def set_cube(self, cube: list[list[list[Colour]]]):
@@ -177,10 +179,6 @@ class Cube:
         else:
             for row in range(self._size):
                 self._cube[face][row][column] = new_column_list[self._size - 1 - row]
-
-    def initialise_cube(self) -> list[list[list[Colour]]]:
-        """ Returns a completed cube. """
-        return [[[colour] * self._size for _ in range(self._size)] for colour in Colour]
 
     def rotate_x(self, column: int, direction: ColumnMove) -> None:
         """
@@ -379,7 +377,7 @@ class Cube:
         :param row: The row within the face, 0-indexed.
         :param column: The column within the row, 0-indexed.
         """
-        if not 0 <= face < self.FACES_IN_A_CUBE:
+        if not 0 <= face < Cube.FACES_IN_A_CUBE:
             raise ValueError("Invalid face")
         if not 0 <= row < self._size:
             raise ValueError("Invalid row")
@@ -406,7 +404,7 @@ class Cube:
     def __str__(self) -> str:
         """ Pretty-print self.cube """
         output = ""
-        for face in range(self.FACES_IN_A_CUBE):
+        for face in range(Cube.FACES_IN_A_CUBE):
             output += f"Face {face + 1}:"
             for row in range(self._size):
                 row_string = "\n\t"
@@ -416,6 +414,79 @@ class Cube:
                 output += row_string
             output += "\n"
         return output[:-1]  # Exclude final newline character
+
+    @staticmethod
+    def create_completed_cube(size: int) -> list[list[list[Colour]]]:
+        """
+        Returns a completed cube.
+        :param size: The cube created will have faces that are <size>x<size> (e.g. (3x3)).
+                     Must be >= 1.
+        """
+        if size <= 0:
+            raise ValueError("Invalid size")
+        return [[[colour] * size for _ in range(size)] for colour in Colour]
+
+    @staticmethod
+    def create_cube_from_string_representation(size: int, string_representation: str) -> list[list[list[Colour]]]:
+        """
+
+        :param size: The cube created will have faces that are <size>x<size> (e.g. (3x3)).
+                     Must be >= 1.
+        :param string_representation:
+        """
+        if size <= 0:
+            raise ValueError("Invalid size")
+
+        cube_list = []
+        i = 0
+        for face in range(Cube.FACES_IN_A_CUBE):
+            face_list = []
+            for row in range(size):
+                row_list = []
+                for square in range(size):
+                    row_list.append(Cube.get_colour_from_string(string_representation[i]))
+                    i += 1
+                face_list.append(row_list)
+            cube_list.append(face_list)
+        return cube_list
+
+    @staticmethod
+    def get_colour_from_string(colour_string: str) -> Colour:
+        match colour_string:
+            case "G":
+                colour = Colour.GREEN
+            case "R":
+                colour = Colour.RED
+            case "B":
+                colour = Colour.BLUE
+            case "O":
+                colour = Colour.ORANGE
+            case "W":
+                colour = Colour.WHITE
+            case "Y":
+                colour = Colour.YELLOW
+            case _:
+                raise ValueError("Invalid string")
+        return colour
+
+    @staticmethod
+    def get_string_from_colour(colour: Colour) -> str:
+        match colour:
+            case Colour.GREEN:
+                colour_string = "G"
+            case Colour.RED:
+                colour_string = "R"
+            case Colour.BLUE:
+                colour_string = "B"
+            case Colour.ORANGE:
+                colour_string = "O"
+            case Colour.WHITE:
+                colour_string = "W"
+            case Colour.YELLOW:
+                colour_string = "Y"
+            case _:
+                raise ValueError("Invalid Colour")
+        return colour_string
 
 
 class CubeIterator:
@@ -448,5 +519,9 @@ class CubeIterator:
 
 if __name__ == '__main__':
     test_cube = Cube(3)
+    test_cube.display_cube()
 
-    print(test_cube.get_string_representation())
+    default_cube_string = test_cube.get_string_representation()
+
+    new_cube = Cube(3, string_repr=default_cube_string)
+    new_cube.display_cube()
