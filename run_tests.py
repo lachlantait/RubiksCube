@@ -4,7 +4,7 @@ from cube import *
 
 
 class PatternTests(unittest.TestCase):
-    def test_example(self):
+    def test_3x3_example(self):
         test_cube = Cube(3)
         test_cube.rotate_x(1, ColumnMove.UP)
         test_cube.rotate_y(2, RowMove.LEFT)
@@ -12,9 +12,8 @@ class PatternTests(unittest.TestCase):
         test_cube.rotate_x(1, ColumnMove.DOWN)
         test_cube.rotate_y(2, RowMove.RIGHT)
         test_cube.rotate_z(3, ColumnMove.DOWN)
-        result = test_cube.get_cube()
 
-        expected = [
+        expected_cube_list = [
             [
                 [Colour.YELLOW, Colour.WHITE, Colour.WHITE],
                 [Colour.YELLOW, Colour.GREEN, Colour.ORANGE],
@@ -46,8 +45,9 @@ class PatternTests(unittest.TestCase):
                 [Colour.ORANGE, Colour.BLUE, Colour.YELLOW]
             ]
         ]
+        expected_cube = Cube(3, expected_cube_list)
 
-        self.assertEqual(result, expected, "The cubes don't match!")
+        self.assertEqual(test_cube, expected_cube, "The cubes don't match!")
 
 
 if __name__ == '__main__':

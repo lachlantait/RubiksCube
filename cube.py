@@ -2,11 +2,12 @@
 Rubik's Cube simulator.
 """
 
-__author__ = "Lachlan Tait"
-
+from __future__ import annotations
 from enum import Enum, auto
 
 from termcolor import colored
+
+__author__ = "Lachlan Tait"
 
 
 class Colour(Enum):
@@ -70,7 +71,7 @@ class Cube:
     
     FACES_IN_A_CUBE = 6
 
-    def __init__(self, size: int, cube: list[list[list[Colour]]] = None) -> None:
+    def __init__(self, size: int, cube: list[list[list[Colour]]] | None = None) -> None:
         """
         Initialises the cube.
         :param size: The cube created will have faces that are <size>x<size> (e.g. (3x3)).
@@ -86,6 +87,9 @@ class Cube:
     def __len__(self):
         """ Returns the amount of squares in the cube. """
         return self.FACES_IN_A_CUBE * self._size * self._size
+
+    def __eq__(self, other: Cube) -> bool:
+        return self._cube == other._cube
 
     def get_size(self) -> int:
         return self._size
