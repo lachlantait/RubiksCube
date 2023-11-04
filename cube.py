@@ -3,49 +3,19 @@ Rubik's Cube simulator.
 """
 
 from __future__ import annotations
-from enum import Enum, auto
 
-from termcolor import colored
+from abc import ABC, abstractmethod
+from enum import Enum, auto
 
 __author__ = "Lachlan Tait"
 
 
-class Colour(Enum):
-    """
-    Colours for the faces of the cube.
-    Note: The ordering here determines the order that colours are assigned to faces.
-    """
-    GREEN = auto()
-    RED = auto()
-    BLUE = auto()
-    ORANGE = auto()
-    WHITE = auto()
-    YELLOW = auto()
-
-
-class RowMove(Enum):
-    """ Moves to be performed on a row of the cube. """
-    LEFT = 1
-    RIGHT = 2
-
-
-class ColumnMove(Enum):
-    """ Moves to be performed on a column of the cube. """
-    UP = 1
-    DOWN = 2
-
-
-class RotateMove(Enum):
-    """ Directions a face of the cube can be rotated in. """
-    ANTICLOCKWISE = 1
-    CLOCKWISE = 2
-
-
-class Cube:
+class Cube(ABC):
     """
     A Rubik's Cube.
 
     Represented internally as a 3-dimensional list of Colour values.
+    This class is abstract so that subclasses can provide their own method of displaying the cube.
 
     Faces are indexed like so:
         ╔===╗
@@ -328,90 +298,6 @@ class Cube:
                 for column in range(self._size):
                     self._cube[face][row][column] = columns[row][self._size - 1 - column]
 
-    def display_cube(self) -> None:
-        """
-        Display a text interface representing the cube.
-
-        Example:
-                ╔=======╗
-                ╟ ■ ■ ■ ╢
-                ╟ ■ ■ ■ ╢
-                ╟ ■ ■ ■ ╢
-        ╔=======╬=======╬=======╦=======╗
-        ╟ ■ ■ ■ ╫ ■ ■ ■ ╫ ■ ■ ■ ╫ ■ ■ ■ ╢
-        ╟ ■ ■ ■ ╫ ■ ■ ■ ╫ ■ ■ ■ ╫ ■ ■ ■ ╢
-        ╟ ■ ■ ■ ╫ ■ ■ ■ ╫ ■ ■ ■ ╫ ■ ■ ■ ╢
-        ╚=======╬=======╬=======╩=======╝
-                ╟ ■ ■ ■ ╢
-                ╟ ■ ■ ■ ╢
-                ╟ ■ ■ ■ ╢
-                ╚=======╝
-        """
-        horizontal_line = "=" * (self._size * 2 + 1)
-        space_before = " " * (2 + self._size * 2)
-
-        # Face 4 (top)
-        print(space_before + "╔" + horizontal_line + "╗")
-        for row in range(self._size):
-            row_output = space_before + "╟ "
-            for column in range(self._size):
-                row_output += self.get_coloured_square(4, row, column) + " "
-            row_output += "╢"
-            print(row_output)
-
-        # Faces 0-3
-        print("╔" + horizontal_line + "╬" + horizontal_line + "╬" + horizontal_line + "╦" + horizontal_line + "╗")
-        for row in range(self._size):
-            row_output = "╟ "
-            for face in range(4):  # Do faces 0, 1, 2, 3
-                for column in range(self._size):
-                    row_output += self.get_coloured_square(face, row, column) + " "
-                row_output += "╫ "
-            row_output = row_output[:-2] + "╢"
-            print(row_output)
-        print("╚" + horizontal_line + "╬" + horizontal_line + "╬" + horizontal_line + "╩" + horizontal_line + "╝")
-
-        # Face 5 (bottom)
-        for row in range(self._size):
-            row_output = space_before + "╟ "
-            for column in range(self._size):
-                row_output += self.get_coloured_square(5, row, column) + " "
-            row_output += "╢"
-            print(row_output)
-        print(space_before + "╚" + horizontal_line + "╝")
-
-    def get_coloured_square(self, face: int, row: int, column: int) -> str:
-        """
-        Returns a coloured string, displaying the colour of the given square.
-
-        :param face: The face of the cube, 0-indexed.
-        :param row: The row within the face, 0-indexed.
-        :param column: The column within the row, 0-indexed.
-        """
-        if not 0 <= face < Cube.FACES_IN_A_CUBE:
-            raise ValueError("Invalid face")
-        if not 0 <= row < self._size:
-            raise ValueError("Invalid row")
-        if not 0 <= column < self._size:
-            raise ValueError("Invalid column")
-
-        match self.get_square(face, row, column):
-            case Colour.RED:
-                colour = "red"
-            case Colour.WHITE:
-                colour = "white"
-            case Colour.ORANGE:
-                colour = "yellow"  # No orange in termcolor :(
-            case Colour.YELLOW:
-                colour = "light_yellow"
-            case Colour.GREEN:
-                colour = "green"
-            case Colour.BLUE:
-                colour = "blue"
-            case _:
-                colour = "black"
-        return colored("■", colour)
-
     def __str__(self) -> str:
         """ Pretty-print self._cube """
         output = ""
@@ -507,6 +393,10 @@ class Cube:
                 raise ValueError("Invalid Colour")
         return colour_string
 
+    @abstractmethod
+    def display_cube(self) -> None:
+        pass
+
 
 class CubeIterator:
     """ Iterates through every square in the cube in order. """
@@ -537,11 +427,32 @@ class CubeIterator:
         return square
 
 
-if __name__ == '__main__':
-    test_cube = Cube(3)
-    test_cube.display_cube()
+class Colour(Enum):
+    """
+    Colours for the faces of the cube.
+    Note: The ordering here determines the order that colours are assigned to faces.
+    """
+    GREEN = auto()
+    RED = auto()
+    BLUE = auto()
+    ORANGE = auto()
+    WHITE = auto()
+    YELLOW = auto()
 
-    default_cube_string = test_cube.get_string_representation()
 
-    new_cube = Cube(3, string_repr=default_cube_string)
-    new_cube.display_cube()
+class RowMove(Enum):
+    """ Moves to be performed on a row of the cube. """
+    LEFT = 1
+    RIGHT = 2
+
+
+class ColumnMove(Enum):
+    """ Moves to be performed on a column of the cube. """
+    UP = 1
+    DOWN = 2
+
+
+class RotateMove(Enum):
+    """ Directions a face of the cube can be rotated in. """
+    ANTICLOCKWISE = 1
+    CLOCKWISE = 2

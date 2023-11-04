@@ -1,12 +1,13 @@
 import unittest
 
-from cube import Cube, RowMove, ColumnMove, Colour
+from cube import RowMove, ColumnMove, Colour
+from cube_text_ui_2d import CubeTextUI2D
 from cube_simulator_3x3 import CubeSimulator3x3
 
 
 class PatternTests3x3(unittest.TestCase):
     def test_example(self):
-        test_cube = Cube(3)
+        test_cube = CubeTextUI2D(3)
         test_cube.rotate_x(1, ColumnMove.UP)
         test_cube.rotate_y(2, RowMove.LEFT)
         test_cube.rotate_z(3, ColumnMove.UP)
@@ -46,11 +47,11 @@ class PatternTests3x3(unittest.TestCase):
                 [Colour.ORANGE, Colour.BLUE, Colour.YELLOW]
             ]
         ]
-        expected_cube = Cube(3, cube_list=expected_cube_list)
+        expected_cube = CubeTextUI2D(3, cube_list=expected_cube_list)
         self.assertEqual(test_cube, expected_cube, "The cubes don't match!")
 
         expected_cube_string = "YWWYGOGRGBRRGRGRRRBBWRBWBBBGYOGOGOOWGOROWWOWWYYYBYYOBY"
-        expected_cube = Cube(3, string_repr=expected_cube_string)
+        expected_cube = CubeTextUI2D(3, string_repr=expected_cube_string)
         self.assertEqual(test_cube, expected_cube, "Creating a cube from a string representation doesn't work")
 
     def test_checkerboard(self):
@@ -60,13 +61,13 @@ class PatternTests3x3(unittest.TestCase):
                                "ORORORORO"
                                "WYWYWYWYW"
                                "YWYWYWYWY")
-        expected_cube = Cube(3, string_repr=checkerboard_string)
+        expected_cube = CubeTextUI2D(3, string_repr=checkerboard_string)
 
-        test_sim = CubeSimulator3x3()
+        test_sim = CubeSimulator3x3(CubeTextUI2D)
         test_sim.perform_moves("M2E2S2")
         self.assertEqual(expected_cube, test_sim._cube, "The two cubes are not equal")
 
-        test_sim = CubeSimulator3x3()
+        test_sim = CubeSimulator3x3(CubeTextUI2D)
         test_sim.perform_moves("MESMES")
         self.assertEqual(expected_cube, test_sim._cube, "The two cubes are not equal")
 

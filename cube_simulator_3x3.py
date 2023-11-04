@@ -1,4 +1,4 @@
-from typing import Callable
+from typing import Callable, Type
 
 from cube import Cube, RowMove, ColumnMove
 
@@ -9,8 +9,12 @@ class CubeSimulator3x3:
     (sourced here: https://solvethecube.com/notation).
     """
 
-    def __init__(self) -> None:
-        self._cube = Cube(3)
+    def __init__(self, cube_subclass: Type[Cube]) -> None:
+        """
+        Initialises the cube using the Cube subclass given.
+        Cube subclasses can each have their own method of displaying the cube.
+        """
+        self._cube = cube_subclass(3)
 
     def perform_moves(self, moves_string: str) -> None:
         """
@@ -169,6 +173,7 @@ class CubeSimulator3x3:
 
 
 if __name__ == '__main__':
-    test_sim = CubeSimulator3x3()
+    from cube_text_ui_2d import CubeTextUI2D
+    test_sim = CubeSimulator3x3(CubeTextUI2D)
     test_sim.perform_moves("M2E2S2")
     test_sim.display_cube()
