@@ -4,11 +4,21 @@ from cube import Cube, RowMove, ColumnMove
 
 
 class CubeSimulator3x3:
+    """
+    Provides an interface for performing moves on a 3x3 Cube using 3x3 Rubik's Cube move notation
+    (sourced here: https://solvethecube.com/notation).
+    """
 
     def __init__(self) -> None:
         self._cube = Cube(3)
 
     def perform_moves(self, moves_string: str) -> None:
+        """
+        Reads the string given and performs all moves on the cube.
+
+        :param moves_string: A string representing a sequence of moves to perform.
+            e.g. "RUR'U'" means R U R' U'.
+        """
         stored_move = None
         for char in moves_string:
             if char == "2":
@@ -31,6 +41,11 @@ class CubeSimulator3x3:
             stored_move()
 
     def _get_move_from_char(self, move_char: str) -> Callable:
+        """
+        Returns the move_* function that corresponds to the single-character string given.
+
+        :raises ValueError: If move_char is not a single-character string that corresponds to a move_* function.
+        """
         match move_char:
             case "U":
                 move = self.move_U
