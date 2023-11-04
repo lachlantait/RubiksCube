@@ -67,7 +67,7 @@ class Cube(ABC):
         elif string_repr:
             self._cube = Cube.create_cube_from_string_representation(self._size, string_repr)
         else:
-            self._cube = Cube.create_solved_cube(self._size)
+            self.reset()  # Sets the cube to the initial, solved state
 
     def __len__(self):
         """ Returns the amount of squares in the cube. """
@@ -159,6 +159,10 @@ class Cube(ABC):
         else:
             for row in range(self._size):
                 self._cube[face][row][column] = new_column_list[self._size - 1 - row]
+
+    def reset(self) -> None:
+        """ Resets the cube back to the solved state. """
+        self._cube = Cube.create_solved_cube(self._size)
 
     def rotate_x(self, column: int, direction: ColumnMove) -> None:
         """
