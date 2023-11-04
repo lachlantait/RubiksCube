@@ -1,9 +1,10 @@
 from typing import Callable, Type
 
 from cube import Cube, RowMove, ColumnMove
+from cube_simulator import CubeSimulator
 
 
-class CubeSimulator3x3:
+class CubeSimulator3x3(CubeSimulator):
     """
     Provides an interface for performing moves on a 3x3 Cube using 3x3 Rubik's Cube move notation
     (sourced here: https://solvethecube.com/notation).
@@ -14,82 +15,27 @@ class CubeSimulator3x3:
         Initialises the cube using the Cube subclass given.
         Cube subclasses can each have their own method of displaying the cube.
         """
-        self._cube = cube_subclass(3)
-
-    def perform_moves(self, moves_string: str) -> None:
-        """
-        Reads the string given and performs all moves on the cube.
-
-        :param moves_string: A string representing a sequence of moves to perform.
-            e.g. "RUR'U'" means R U R' U'.
-        """
-        stored_move = None
-        for char in moves_string:
-            if char == "2":
-                if stored_move:
-                    self.move_twice(stored_move)
-                    stored_move = None
-                else:
-                    raise ValueError("typed 2 with nothing/invalid value before it")
-            elif char == "'":
-                if stored_move:
-                    stored_move(prime=True)
-                    stored_move = None
-                else:
-                    raise ValueError("typed ' with nothing/invalid value before it")
-            else:
-                if stored_move:
-                    stored_move()
-                stored_move = self._get_move_from_char(char)
-        if stored_move:
-            stored_move()
-
-    def _get_move_from_char(self, move_char: str) -> Callable:
-        """
-        Returns the move_* function that corresponds to the single-character string given.
-
-        :raises ValueError: If move_char is not a single-character string that corresponds to a move_* function.
-        """
-        match move_char:
-            case "U":
-                move = self.move_U
-            case "D":
-                move = self.move_D
-            case "L":
-                move = self.move_L
-            case "R":
-                move = self.move_R
-            case "F":
-                move = self.move_F
-            case "B":
-                move = self.move_B
-            case "M":
-                move = self.move_M
-            case "E":
-                move = self.move_E
-            case "S":
-                move = self.move_S
-            case "u":
-                move = self.move_u
-            case "d":
-                move = self.move_d
-            case "l":
-                move = self.move_l
-            case "r":
-                move = self.move_r
-            case "f":
-                move = self.move_f
-            case "b":
-                move = self.move_b
-            case "x":
-                move = self.move_x
-            case "y":
-                move = self.move_y
-            case "z":
-                move = self.move_z
-            case _:
-                raise ValueError("Invalid character")
-        return move
+        super().__init__(cube_subclass, 3)
+        self._moves: dict[str, Callable] = {
+            "U": self.move_U,
+            "D": self.move_D,
+            "L": self.move_L,
+            "R": self.move_R,
+            "F": self.move_F,
+            "B": self.move_B,
+            "M": self.move_M,
+            "E": self.move_E,
+            "S": self.move_S,
+            "u": self.move_u,
+            "d": self.move_d,
+            "l": self.move_l,
+            "r": self.move_r,
+            "f": self.move_f,
+            "b": self.move_b,
+            "x": self.move_x,
+            "y": self.move_y,
+            "z": self.move_z
+        }
 
     def move_U(self, *, prime: bool = False) -> None:
         direction = RowMove.LEFT if not prime else RowMove.RIGHT
@@ -162,14 +108,6 @@ class CubeSimulator3x3:
     def move_z(self, *, prime: bool = False) -> None:
         self.move_F(prime=prime)
         self.move_d(prime=not prime)
-
-    @staticmethod
-    def move_twice(move: Callable) -> None:
-        move()
-        move()
-
-    def display_cube(self) -> None:
-        self._cube.display_cube()
 
 
 if __name__ == '__main__':

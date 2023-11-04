@@ -67,6 +67,7 @@ class CubeTextUI2D(Cube):
         :param face: The face of the cube, 0-indexed.
         :param row: The row within the face, 0-indexed.
         :param column: The column within the row, 0-indexed.
+        :raises ValueError: If an invalid face, row, or column is given.
         """
         if not 0 <= face < Cube.FACES_IN_A_CUBE:
             raise ValueError("Invalid face")
