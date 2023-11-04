@@ -268,20 +268,20 @@ class Cube:
         # Rotate the column
         # Some 'columns' here are actually stored as rows
         face2_column = self.get_column(2, column)
-        face4_column = self.get_row(4, 0)
+        face4_column = self.get_row(4, self._size - 1 - column)
         face0_column = self.get_column(0, self._size - 1 - column)  # Get opposite column
-        face5_column = self.get_row(5, self._size - 1)
+        face5_column = self.get_row(5, column)
         if direction == ColumnMove.UP:
             self._set_column(2, column, face5_column, reverse=True)
-            self._set_row(4, 0, face2_column)
+            self._set_row(4, self._size - 1 - column, face2_column)
             # Set the opposite column, in reverse order:
             self._set_column(0, self._size - 1 - column, face4_column, reverse=True)
-            self._set_row(5, self._size - 1, face0_column)
+            self._set_row(5, column, face0_column)
         else:  # direction == ColumnMove.DOWN
             self._set_column(2, column, face4_column)
-            self._set_row(4, 0, face0_column, reverse=True)
+            self._set_row(4, self._size - 1 - column, face0_column, reverse=True)
             self._set_column(0, self._size - 1 - column, face5_column)  # Set the opposite column
-            self._set_row(5, self._size - 1, face2_column, reverse=True)
+            self._set_row(5, column, face2_column, reverse=True)
 
         # Leftmost column was rotated, so face 1 was rotated
         if column == 0:

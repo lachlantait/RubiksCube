@@ -1,10 +1,11 @@
 import unittest
 
-from cube import *
+from cube import Cube, RowMove, ColumnMove, Colour
+from cube_simulator_3x3 import CubeSimulator3x3
 
 
-class PatternTests(unittest.TestCase):
-    def test_3x3_example(self):
+class PatternTests3x3(unittest.TestCase):
+    def test_example(self):
         test_cube = Cube(3)
         test_cube.rotate_x(1, ColumnMove.UP)
         test_cube.rotate_y(2, RowMove.LEFT)
@@ -51,6 +52,23 @@ class PatternTests(unittest.TestCase):
         expected_cube_string = "YWWYGOGRGBRRGRGRRRBBWRBWBBBGYOGOGOOWGOROWWOWWYYYBYYOBY"
         expected_cube = Cube(3, string_repr=expected_cube_string)
         self.assertEqual(test_cube, expected_cube, "Creating a cube from a string representation doesn't work")
+
+    def test_checkerboard(self):
+        checkerboard_string = ("GBGBGBGBG"
+                               "ROROROROR"
+                               "BGBGBGBGB"
+                               "ORORORORO"
+                               "WYWYWYWYW"
+                               "YWYWYWYWY")
+        expected_cube = Cube(3, string_repr=checkerboard_string)
+
+        test_sim = CubeSimulator3x3()
+        test_sim.perform_moves("M2E2S2")
+        self.assertEqual(expected_cube, test_sim._cube, "The two cubes are not equal")
+
+        test_sim = CubeSimulator3x3()
+        test_sim.perform_moves("MESMES")
+        self.assertEqual(expected_cube, test_sim._cube, "The two cubes are not equal")
 
 
 if __name__ == '__main__':
