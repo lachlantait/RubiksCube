@@ -56,6 +56,7 @@ class Cube(ABC):
         :param cube_list: If provided, the cube is initialised to this 3-dimensional list.
         :param string_repr: If provided (and <cube> is not),
             the cube is initialised using this string representation of a cube.
+        :raises ValueError: If a non-positive size is given.
         """
         if size <= 0:
             raise ValueError("Invalid size")
@@ -170,6 +171,7 @@ class Cube(ABC):
 
         :param column: The column to rotate, 1-indexed.
         :param direction: Whether to rotate the column up or down.
+        :raises ValueError: If an invalid column number is given.
         """
         if not 1 <= column <= self._size:
             raise ValueError("Invalid column")
@@ -208,6 +210,7 @@ class Cube(ABC):
 
         :param row: The row to rotate, 1-indexed.
         :param direction: Whether to rotate the row left or right.
+        :raises ValueError: If an invalid row number is given.
         """
         if not 1 <= row <= self._size:
             raise ValueError("Invalid row")
@@ -244,6 +247,7 @@ class Cube(ABC):
 
         :param column: The column to rotate, 1-indexed.
         :param direction: Whether to rotate the column up or down.
+        :raises ValueError: If an invalid column number is given.
         """
         if not 1 <= column <= self._size:
             raise ValueError("Invalid column")
@@ -323,6 +327,7 @@ class Cube(ABC):
 
         :param size: The cube created will have faces that are <size>x<size> (e.g. (3x3)).
             Must be >= 1.
+        :raises ValueError: If a non-positive size is given.
         """
         if size <= 0:
             raise ValueError("Invalid size")
@@ -340,6 +345,7 @@ class Cube(ABC):
         :param string_representation: A string representing the colours in the cube.
             e.g. "GGGGGGGGGRRRRRRRRRBBBBBBBBBOOOOOOOOOWWWWWWYYYYYY" is a solved cube.
         :return: A 3-dimensional list of colours representing a cube.
+        :raises ValueError: If a non-positive size is given.
         """
         if size <= 0:
             raise ValueError("Invalid size")
@@ -359,7 +365,11 @@ class Cube(ABC):
 
     @staticmethod
     def get_colour_from_string(colour_string: str) -> Colour:
-        """ Returns a Colour that is represented by the single-character string given. """
+        """
+        Returns a Colour that is represented by the single-character string given.
+
+        :raises ValueError: If an invalid string is given.
+        """
         match colour_string:
             case "G":
                 colour = Colour.GREEN
@@ -379,7 +389,11 @@ class Cube(ABC):
 
     @staticmethod
     def get_string_from_colour(colour: Colour) -> str:
-        """ Returns a single-character string representing the colour given. """
+        """
+        Returns a single-character string representing the colour given.
+
+        :raises ValueError: If an invalid Colour is given.
+        """
         match colour:
             case Colour.GREEN:
                 colour_string = "G"

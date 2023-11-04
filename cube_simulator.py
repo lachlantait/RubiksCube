@@ -20,6 +20,8 @@ class CubeSimulator:
         """
         Initialises the cube using the Cube subclass and the size given.
         Cube subclasses can each have their own method of displaying the cube.
+
+        :raises TypeError: If called on CubeSimulator and not from a subclass.
         """
         if type(self) is CubeSimulator:
             raise TypeError(f"Only {type(self).__name__} subclasses may be instantiated")
@@ -32,6 +34,7 @@ class CubeSimulator:
 
         :param moves_string: A string representing a sequence of moves to perform.
             e.g. "RUR'U'" means R U R' U'.
+        :raises ValueError: If a modifier is given with no move before it to perform it on.
         """
         stored_move = None
         for char in moves_string:
