@@ -3,49 +3,19 @@ Rubik's Cube simulator.
 """
 
 from __future__ import annotations
-from enum import Enum, auto
 
-from termcolor import colored
+from abc import ABC, abstractmethod
+from enum import Enum, auto
 
 __author__ = "Lachlan Tait"
 
 
-class Colour(Enum):
-    """
-    Colours for the faces of the cube.
-    Note: The ordering here determines the order that colours are assigned to faces.
-    """
-    GREEN = auto()
-    RED = auto()
-    BLUE = auto()
-    ORANGE = auto()
-    WHITE = auto()
-    YELLOW = auto()
-
-
-class RowMove(Enum):
-    """ Moves to be performed on a row of the cube. """
-    LEFT = 1
-    RIGHT = 2
-
-
-class ColumnMove(Enum):
-    """ Moves to be performed on a column of the cube. """
-    UP = 1
-    DOWN = 2
-
-
-class RotateMove(Enum):
-    """ Directions a face of the cube can be rotated in. """
-    ANTICLOCKWISE = 1
-    CLOCKWISE = 2
-
-
-class Cube:
+class Cube(ABC):
     """
     A Rubik's Cube.
 
-    Represented internally as a 3-dimensional array of Colour values.
+    Represented internally as a 3-dimensional list of Colour values.
+    This class is abstract so that subclasses can provide their own method of displaying the cube.
 
     Faces are indexed like so:
         ╔===╗
@@ -68,7 +38,7 @@ class Cube:
         ╚===╝
     where rotate_x means rotate around the x-axis, etc.
     """
-    
+
     FACES_IN_A_CUBE = 6
 
     def __init__(self, size: int, *,
@@ -78,13 +48,14 @@ class Cube:
         """
         Initialises the cube.
 
-        If neither <cube> nor <string_repr> are provided, the cube is initialised in the completed state.
+        If neither <cube_list> nor <string_repr> are provided, the cube initialised is solved.
+        Warning: <cube_list> and <string_repr> are not checked to see if they are valid/solvable cubes.
 
         :param size: The cube created will have faces that are <size>x<size> (e.g. (3x3)).
-                     Must be >= 1.
+            Must be >= 1.
         :param cube_list: If provided, the cube is initialised to this 3-dimensional list.
         :param string_repr: If provided (and <cube> is not),
-                            the cube is initialised using this string representation of a cube.
+            the cube is initialised using this string representation of a cube.
         """
         if size <= 0:
             raise ValueError("Invalid size")
@@ -96,14 +67,14 @@ class Cube:
         elif string_repr:
             self._cube = Cube.create_cube_from_string_representation(self._size, string_repr)
         else:
-            self._cube = Cube.create_completed_cube(self._size)
+            self.reset()  # Sets the cube to the initial, solved state
 
     def __len__(self):
         """ Returns the amount of squares in the cube. """
         return Cube.FACES_IN_A_CUBE * self._size * self._size
 
     def __eq__(self, other: Cube) -> bool:
-        return self._cube == other._cube
+        return self._size == other._size and self._cube == other._cube
 
     def __iter__(self):
         return CubeIterator(self)
@@ -117,6 +88,7 @@ class Cube:
     def get_row(self, face: int, row: int) -> list[Colour]:
         """
         Given a face and a row number, returns a list representing that row.
+
         :param face: The face of the cube, 0-indexed.
         :param row: The row within the face, 0-indexed.
         """
@@ -140,12 +112,20 @@ class Cube:
         return self._cube[face][row][column]
 
     def get_string_representation(self) -> str:
+        """
+        Returns a string representing the cube.
+        e.g. "GGGGGGGGGRRRRRRRRRBBBBBBBBBOOOOOOOOOWWWWWWYYYYYY" is a solved cube.
+        """
         output = ""
         for square in self:
             output += Cube.get_string_from_colour(square)
         return output
 
     def set_cube(self, cube: list[list[list[Colour]]]):
+        """
+        Sets the cube to the 3-dimensional list given.
+        Warning: cube is not checked to see if it is a valid/solvable cube.
+        """
         self._cube = cube
 
     def _set_row(self, face: int, row: int, new_row_list: list[Colour], reverse: bool = False) -> None:
@@ -170,7 +150,7 @@ class Cube:
         :param face: The face of the cube, 0-indexed.
         :param column: The column within the face, 0-indexed.
         :param new_column_list: A list representing a column, the column will be set using this list.
-                                This list should have the top-most square first.
+            This list should have the top-most square first.
         :param reverse: If true, sets the column in reverse order.
         """
         if not reverse:
@@ -179,6 +159,10 @@ class Cube:
         else:
             for row in range(self._size):
                 self._cube[face][row][column] = new_column_list[self._size - 1 - row]
+
+    def reset(self) -> None:
+        """ Resets the cube back to the solved state. """
+        self._cube = Cube.create_solved_cube(self._size)
 
     def rotate_x(self, column: int, direction: ColumnMove) -> None:
         """
@@ -230,20 +214,20 @@ class Cube:
         row -= 1  # Change row to 0-indexed.
 
         # Rotate the row
-        face0_row = self._cube[0][row]
-        face1_row = self._cube[1][row]
-        face2_row = self._cube[2][row]
-        face3_row = self._cube[3][row]
+        face0_row = self.get_row(0, row)
+        face1_row = self.get_row(1, row)
+        face2_row = self.get_row(2, row)
+        face3_row = self.get_row(3, row)
         if direction == RowMove.LEFT:
-            self._cube[0][row] = face1_row
-            self._cube[1][row] = face2_row
-            self._cube[2][row] = face3_row
-            self._cube[3][row] = face0_row
+            self._set_row(0, row, face1_row)
+            self._set_row(1, row, face2_row)
+            self._set_row(2, row, face3_row)
+            self._set_row(3, row, face0_row)
         else:  # direction == RowMove.RIGHT
-            self._cube[0][row] = face3_row
-            self._cube[1][row] = face0_row
-            self._cube[2][row] = face1_row
-            self._cube[3][row] = face2_row
+            self._set_row(0, row, face3_row)
+            self._set_row(1, row, face0_row)
+            self._set_row(2, row, face1_row)
+            self._set_row(3, row, face2_row)
 
         # Top row was rotated, so top face was rotated
         if row == 0:
@@ -268,20 +252,20 @@ class Cube:
         # Rotate the column
         # Some 'columns' here are actually stored as rows
         face2_column = self.get_column(2, column)
-        face4_column = self.get_row(4, 0)
+        face4_column = self.get_row(4, self._size - 1 - column)
         face0_column = self.get_column(0, self._size - 1 - column)  # Get opposite column
-        face5_column = self.get_row(5, self._size - 1)
+        face5_column = self.get_row(5, column)
         if direction == ColumnMove.UP:
             self._set_column(2, column, face5_column, reverse=True)
-            self._set_row(4, 0, face2_column)
+            self._set_row(4, self._size - 1 - column, face2_column)
             # Set the opposite column, in reverse order:
             self._set_column(0, self._size - 1 - column, face4_column, reverse=True)
-            self._set_row(5, self._size - 1, face0_column)
+            self._set_row(5, column, face0_column)
         else:  # direction == ColumnMove.DOWN
             self._set_column(2, column, face4_column)
-            self._set_row(4, 0, face0_column, reverse=True)
+            self._set_row(4, self._size - 1 - column, face0_column, reverse=True)
             self._set_column(0, self._size - 1 - column, face5_column)  # Set the opposite column
-            self._set_row(5, self._size - 1, face2_column, reverse=True)
+            self._set_row(5, column, face2_column, reverse=True)
 
         # Leftmost column was rotated, so face 1 was rotated
         if column == 0:
@@ -318,109 +302,27 @@ class Cube:
                 for column in range(self._size):
                     self._cube[face][row][column] = columns[row][self._size - 1 - column]
 
-    def display_cube(self) -> None:
-        """
-        Display a text interface representing the cube.
-
-        Example:
-                ╔=======╗
-                ╟ ■ ■ ■ ╢
-                ╟ ■ ■ ■ ╢
-                ╟ ■ ■ ■ ╢
-        ╔=======╬=======╬=======╦=======╗
-        ╟ ■ ■ ■ ╫ ■ ■ ■ ╫ ■ ■ ■ ╫ ■ ■ ■ ╢
-        ╟ ■ ■ ■ ╫ ■ ■ ■ ╫ ■ ■ ■ ╫ ■ ■ ■ ╢
-        ╟ ■ ■ ■ ╫ ■ ■ ■ ╫ ■ ■ ■ ╫ ■ ■ ■ ╢
-        ╚=======╬=======╬=======╩=======╝
-                ╟ ■ ■ ■ ╢
-                ╟ ■ ■ ■ ╢
-                ╟ ■ ■ ■ ╢
-                ╚=======╝
-        """
-        horizontal_line = "=" * (self._size * 2 + 1)
-        space_before = " " * (2 + self._size * 2)
-
-        # Face 4 (top)
-        print(space_before + "╔" + horizontal_line + "╗")
-        for row in range(self._size):
-            row_output = space_before + "╟ "
-            for column in range(self._size):
-                row_output += self.get_coloured_square(4, row, column) + " "
-            row_output += "╢"
-            print(row_output)
-
-        # Faces 0-3
-        print("╔" + horizontal_line + "╬" + horizontal_line + "╬" + horizontal_line + "╦" + horizontal_line + "╗")
-        for row in range(self._size):
-            row_output = "╟ "
-            for face in range(4):  # Do faces 0, 1, 2, 3
-                for column in range(self._size):
-                    row_output += self.get_coloured_square(face, row, column) + " "
-                row_output += "╫ "
-            row_output = row_output[:-2] + "╢"
-            print(row_output)
-        print("╚" + horizontal_line + "╬" + horizontal_line + "╬" + horizontal_line + "╩" + horizontal_line + "╝")
-
-        # Face 5 (bottom)
-        for row in range(self._size):
-            row_output = space_before + "╟ "
-            for column in range(self._size):
-                row_output += self.get_coloured_square(5, row, column) + " "
-            row_output += "╢"
-            print(row_output)
-        print(space_before + "╚" + horizontal_line + "╝")
-
-    def get_coloured_square(self, face: int, row: int, column: int) -> str:
-        """
-        Returns a coloured string, displaying the colour of the given square.
-        :param face: The face of the cube, 0-indexed.
-        :param row: The row within the face, 0-indexed.
-        :param column: The column within the row, 0-indexed.
-        """
-        if not 0 <= face < Cube.FACES_IN_A_CUBE:
-            raise ValueError("Invalid face")
-        if not 0 <= row < self._size:
-            raise ValueError("Invalid row")
-        if not 0 <= column < self._size:
-            raise ValueError("Invalid column")
-
-        match self._cube[face][row][column]:
-            case Colour.RED:
-                colour = "red"
-            case Colour.WHITE:
-                colour = "white"
-            case Colour.ORANGE:
-                colour = "yellow"  # No orange in termcolor :(
-            case Colour.YELLOW:
-                colour = "light_yellow"
-            case Colour.GREEN:
-                colour = "green"
-            case Colour.BLUE:
-                colour = "blue"
-            case _:
-                colour = "black"
-        return colored("■", colour)
-
     def __str__(self) -> str:
-        """ Pretty-print self.cube """
+        """ Pretty-print self._cube """
         output = ""
         for face in range(Cube.FACES_IN_A_CUBE):
             output += f"Face {face + 1}:"
             for row in range(self._size):
                 row_string = "\n\t"
                 for column in range(self._size):
-                    row_string += f"[{self._cube[face][row][column].name}] "
+                    row_string += f"[{self.get_square(face, row, column).name}] "
                 row_string = row_string[:-1]  # Exclude final space
                 output += row_string
             output += "\n"
         return output[:-1]  # Exclude final newline character
 
     @staticmethod
-    def create_completed_cube(size: int) -> list[list[list[Colour]]]:
+    def create_solved_cube(size: int) -> list[list[list[Colour]]]:
         """
-        Returns a completed cube.
+        Returns a solved cube.
+
         :param size: The cube created will have faces that are <size>x<size> (e.g. (3x3)).
-                     Must be >= 1.
+            Must be >= 1.
         """
         if size <= 0:
             raise ValueError("Invalid size")
@@ -429,10 +331,15 @@ class Cube:
     @staticmethod
     def create_cube_from_string_representation(size: int, string_representation: str) -> list[list[list[Colour]]]:
         """
+        Returns a cube created from a string representing how the colours should be assigned to each square.
+
+        Warning: This method doesn't check that the cube created is solvable.
 
         :param size: The cube created will have faces that are <size>x<size> (e.g. (3x3)).
-                     Must be >= 1.
-        :param string_representation:
+            Must be >= 1.
+        :param string_representation: A string representing the colours in the cube.
+            e.g. "GGGGGGGGGRRRRRRRRRBBBBBBBBBOOOOOOOOOWWWWWWYYYYYY" is a solved cube.
+        :return: A 3-dimensional list of colours representing a cube.
         """
         if size <= 0:
             raise ValueError("Invalid size")
@@ -452,6 +359,7 @@ class Cube:
 
     @staticmethod
     def get_colour_from_string(colour_string: str) -> Colour:
+        """ Returns a Colour that is represented by the single-character string given. """
         match colour_string:
             case "G":
                 colour = Colour.GREEN
@@ -471,6 +379,7 @@ class Cube:
 
     @staticmethod
     def get_string_from_colour(colour: Colour) -> str:
+        """ Returns a single-character string representing the colour given. """
         match colour:
             case Colour.GREEN:
                 colour_string = "G"
@@ -488,8 +397,13 @@ class Cube:
                 raise ValueError("Invalid Colour")
         return colour_string
 
+    @abstractmethod
+    def display_cube(self) -> None:
+        pass
+
 
 class CubeIterator:
+    """ Iterates through every square in the cube in order. """
     def __init__(self, cube: Cube) -> None:
         self._cube: Cube = cube
         self._current_face: int = 0
@@ -517,11 +431,32 @@ class CubeIterator:
         return square
 
 
-if __name__ == '__main__':
-    test_cube = Cube(3)
-    test_cube.display_cube()
+class Colour(Enum):
+    """
+    Colours for the faces of the cube.
+    Note: The ordering here determines the order that colours are assigned to faces.
+    """
+    GREEN = auto()
+    RED = auto()
+    BLUE = auto()
+    ORANGE = auto()
+    WHITE = auto()
+    YELLOW = auto()
 
-    default_cube_string = test_cube.get_string_representation()
 
-    new_cube = Cube(3, string_repr=default_cube_string)
-    new_cube.display_cube()
+class RowMove(Enum):
+    """ Moves to be performed on a row of the cube. """
+    LEFT = 1
+    RIGHT = 2
+
+
+class ColumnMove(Enum):
+    """ Moves to be performed on a column of the cube. """
+    UP = 1
+    DOWN = 2
+
+
+class RotateMove(Enum):
+    """ Directions a face of the cube can be rotated in. """
+    ANTICLOCKWISE = 1
+    CLOCKWISE = 2
