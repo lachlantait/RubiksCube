@@ -399,7 +399,7 @@ class Cube(ABC):
 
     @abstractmethod
     def display_cube(self) -> None:
-        pass
+        raise NotImplementedError
 
 
 class CubeIterator:
