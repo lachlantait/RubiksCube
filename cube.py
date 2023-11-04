@@ -240,20 +240,20 @@ class Cube:
         row -= 1  # Change row to 0-indexed.
 
         # Rotate the row
-        face0_row = self._cube[0][row]
-        face1_row = self._cube[1][row]
-        face2_row = self._cube[2][row]
-        face3_row = self._cube[3][row]
+        face0_row = self.get_row(0, row)
+        face1_row = self.get_row(1, row)
+        face2_row = self.get_row(2, row)
+        face3_row = self.get_row(3, row)
         if direction == RowMove.LEFT:
-            self._cube[0][row] = face1_row
-            self._cube[1][row] = face2_row
-            self._cube[2][row] = face3_row
-            self._cube[3][row] = face0_row
+            self._set_row(0, row, face1_row)
+            self._set_row(1, row, face2_row)
+            self._set_row(2, row, face3_row)
+            self._set_row(3, row, face0_row)
         else:  # direction == RowMove.RIGHT
-            self._cube[0][row] = face3_row
-            self._cube[1][row] = face0_row
-            self._cube[2][row] = face1_row
-            self._cube[3][row] = face2_row
+            self._set_row(0, row, face3_row)
+            self._set_row(1, row, face0_row)
+            self._set_row(2, row, face1_row)
+            self._set_row(3, row, face2_row)
 
         # Top row was rotated, so top face was rotated
         if row == 0:
@@ -395,7 +395,7 @@ class Cube:
         if not 0 <= column < self._size:
             raise ValueError("Invalid column")
 
-        match self._cube[face][row][column]:
+        match self.get_square(face, row, column):
             case Colour.RED:
                 colour = "red"
             case Colour.WHITE:
@@ -420,7 +420,7 @@ class Cube:
             for row in range(self._size):
                 row_string = "\n\t"
                 for column in range(self._size):
-                    row_string += f"[{self._cube[face][row][column].name}] "
+                    row_string += f"[{self.get_square(face, row, column).name}] "
                 row_string = row_string[:-1]  # Exclude final space
                 output += row_string
             output += "\n"
