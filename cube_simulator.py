@@ -16,7 +16,7 @@ class CubeSimulator:
     This class itself cannot be instantiated, only its subclasses. This is enforced manually in __init__.
     """
 
-    def __init__(self, cube_subclass: Type[Cube], size: int) -> None:
+    def __init__(self, cube_subclass: Type[Cube], size: int = 0) -> None:
         """
         Initialises the cube using the Cube subclass and the size given.
         Cube subclasses can each have their own method of displaying the cube.
@@ -26,7 +26,14 @@ class CubeSimulator:
         if type(self) is CubeSimulator:
             raise TypeError(f"Only {type(self).__name__} subclasses may be instantiated")
         self._cube: Cube = cube_subclass(size)
+        self._size: int = size
         self._moves: dict[str, Callable] = {}
+
+    def get_size(self) -> int:
+        return self._size
+
+    def get_moves(self) -> list[str]:
+        return list(self._moves.keys())
 
     def perform_moves(self, moves_string: str) -> None:
         """
@@ -34,7 +41,8 @@ class CubeSimulator:
 
         :param moves_string: A string representing a sequence of moves to perform.
             e.g. "RUR'U'" means R U R' U'.
-        :raises ValueError: If a modifier is given with no move before it to perform it on.
+        :raises ValueError: If a modifier is given with no move before it to perform it on,
+            or if an invalid character is given.
         """
         stored_move = None
         for char in moves_string:
@@ -43,17 +51,20 @@ class CubeSimulator:
                     self.move_twice(stored_move)
                     stored_move = None
                 else:
-                    raise ValueError("typed 2 with nothing/invalid value before it")
+                    raise ValueError("Typed 2 with nothing/invalid value before it")
             elif char == "'":
                 if stored_move:
                     stored_move(prime=True)
                     stored_move = None
                 else:
-                    raise ValueError("typed ' with nothing/invalid value before it")
+                    raise ValueError("Typed ' with nothing/invalid value before it")
             else:
                 if stored_move:
                     stored_move()
-                stored_move = self._moves[char]
+                try:
+                    stored_move = self._moves[char]
+                except KeyError:
+                    raise ValueError(f"Invalid character: \"{char}\"")
         if stored_move:
             stored_move()
 
