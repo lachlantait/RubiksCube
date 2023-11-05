@@ -23,6 +23,7 @@ class CubeGame2D(CubeGame):
     HORIZONTAL_BORDER = "=" * 55
 
     QUIT_KEY = "Q"
+    RESET_KEY = "W"
     TOGGLE_CASE_KEY = "T"
 
     def __init__(self, simulator_subclass: Type[CubeSimulator], cube_subclass: Type[Cube]) -> None:
@@ -51,6 +52,9 @@ class CubeGame2D(CubeGame):
             if user_input.upper() == CubeGame2D.QUIT_KEY:
                 has_quit = True
                 print()
+            elif user_input.upper() == CubeGame2D.RESET_KEY:
+                self._simulator.get_cube().reset()
+                self._message = "Cube reset"
             elif user_input.upper() == CubeGame2D.TOGGLE_CASE_KEY:
                 self._is_case_toggled = not self._is_case_toggled
             else:
@@ -74,7 +78,8 @@ class CubeGame2D(CubeGame):
     def _display_options(self) -> None:
         print("OPTIONS:")
         toggle_case_state = "X" if self._is_case_toggled else " "
-        print(f"| [{CubeGame2D.QUIT_KEY}]: Quit | [{CubeGame2D.TOGGLE_CASE_KEY}]: Toggle case [{toggle_case_state}] |")
+        print(f"| [{CubeGame2D.QUIT_KEY}]: Quit | [{CubeGame2D.RESET_KEY}]: Reset cube |")
+        print(f"| [{CubeGame2D.TOGGLE_CASE_KEY}]: Toggle case [{toggle_case_state}] |")
 
     def _display_moves(self) -> None:
         print("Type in a sequence of moves and press ENTER")

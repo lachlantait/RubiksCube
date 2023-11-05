@@ -29,6 +29,9 @@ class CubeSimulator:
         self._size: int = size
         self._moves: dict[str, Callable] = {}
 
+    def get_cube(self) -> Cube:
+        return self._cube
+
     def get_size(self) -> int:
         return self._size
 
