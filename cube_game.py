@@ -26,6 +26,8 @@ class CubeGame2D(CubeGame):
     RESET_KEY = "W"
     TOGGLE_CASE_KEY = "T"
 
+    MOVES_INSTRUCTION = "Type in a sequence of moves and press ENTER"
+
     def __init__(self, simulator_subclass: Type[CubeSimulator], cube_subclass: Type[Cube]) -> None:
         """
         Initialises the game.
@@ -33,7 +35,7 @@ class CubeGame2D(CubeGame):
         """
         super().__init__(simulator_subclass, cube_subclass)
         self._is_case_toggled: bool = False
-        self._message: str = ""
+        self._message: str = CubeGame2D.MOVES_INSTRUCTION
 
     def play_game(self) -> None:
         has_quit = False
@@ -47,8 +49,8 @@ class CubeGame2D(CubeGame):
             self._display_moves()
             print(CubeGame2D.HORIZONTAL_BORDER)
             print(self._message)
-            self._message = ""
-            user_input = input("> ")
+            self._message = CubeGame2D.MOVES_INSTRUCTION
+            user_input = input("\n> ")
             if user_input.upper() == CubeGame2D.QUIT_KEY:
                 has_quit = True
                 print()
@@ -82,9 +84,7 @@ class CubeGame2D(CubeGame):
         print(f"| [{CubeGame2D.TOGGLE_CASE_KEY}]: Toggle case [{toggle_case_state}] |")
 
     def _display_moves(self) -> None:
-        print("Type in a sequence of moves and press ENTER")
-
-        print("\nMoves:")
+        print("MOVES:")
         for modifier in [" ", "'", "2"]:
             output = ""
             for move in self._simulator.get_moves():
