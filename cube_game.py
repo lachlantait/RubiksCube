@@ -78,7 +78,6 @@ class CubeGame2D(CubeGame):
 
     def _display_moves(self) -> None:
         print("Type in a sequence of moves and press ENTER")
-        print("(No spaces between characters)")
 
         print("\nMoves:")
         for modifier in [" ", "'", "2"]:

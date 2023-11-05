@@ -45,7 +45,7 @@ class CubeSimulator:
             or if an invalid character is given.
         """
         stored_move = None
-        for char in moves_string:
+        for char in self._remove_whitespace(moves_string):
             if char == "2":
                 if stored_move:
                     self.move_twice(stored_move)
@@ -67,6 +67,15 @@ class CubeSimulator:
                     raise ValueError(f"Invalid character: \"{char}\"")
         if stored_move:
             stored_move()
+
+    @staticmethod
+    def _remove_whitespace(input_str: str) -> str:
+        whitespace_chars = [" ", "\t"]
+        output_str = ""
+        for char in input_str:
+            if char not in whitespace_chars:
+                output_str += char
+        return output_str
 
     @staticmethod
     def move_twice(move: Callable) -> None:
