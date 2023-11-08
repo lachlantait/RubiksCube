@@ -55,7 +55,7 @@ class CubeSimulator3x3(CubeSimulator):
 
     def move_F(self, *, prime: bool = False) -> None:
         direction = ColumnMove.DOWN if not prime else ColumnMove.UP
-        self._cube.rotate_z(3, direction)
+        self._cube.rotate_z(1, direction)
 
     def move_B(self, *, prime: bool = False) -> None:
         direction = ColumnMove.UP if not prime else ColumnMove.DOWN
@@ -107,7 +107,7 @@ class CubeSimulator3x3(CubeSimulator):
 
     def move_z(self, *, prime: bool = False) -> None:
         self.move_F(prime=prime)
-        self.move_d(prime=not prime)
+        self.move_b(prime=not prime)
 
 
 if __name__ == '__main__':

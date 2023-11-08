@@ -28,6 +28,7 @@ class CubeSimulator:
         self._cube: Cube = cube_subclass(size)
         self._size: int = size
         self._moves: dict[str, Callable] = {}
+        self._moves_history: list[list[str]] = []
 
     def get_cube(self) -> Cube:
         return self._cube
@@ -37,6 +38,17 @@ class CubeSimulator:
 
     def get_moves(self) -> list[str]:
         return list(self._moves.keys())
+
+    def get_moves_history(self) -> list[str]:
+        output = []
+        for moves_list in self._moves_history:
+            output.append("".join(moves_list))
+        return output
+
+    def get_most_recent_moves_sequence(self) -> str | None:
+        if len(self._moves_history) > 0:
+            return "".join(self._moves_history[-1])
+        return None
 
     def perform_moves(self, moves_string: str) -> None:
         """
@@ -48,28 +60,39 @@ class CubeSimulator:
             or if an invalid character is given.
         """
         stored_move = None
+        stored_char: str | None = None
+        moves_list: list[str] = []
         for char in self._remove_whitespace(moves_string):
             if char == "2":
                 if stored_move:
                     self.move_twice(stored_move)
+                    moves_list.append(stored_char + char)
                     stored_move = None
+                    stored_char = None
                 else:
                     raise ValueError("Typed 2 with nothing/invalid value before it")
             elif char == "'":
                 if stored_move:
                     stored_move(prime=True)
+                    moves_list.append(stored_char + char)
                     stored_move = None
+                    stored_char = None
                 else:
                     raise ValueError("Typed ' with nothing/invalid value before it")
             else:
                 if stored_move:
                     stored_move()
+                    moves_list.append(stored_char)
                 try:
                     stored_move = self._moves[char]
+                    stored_char = char
                 except KeyError:
                     raise ValueError(f"Invalid character: \"{char}\"")
         if stored_move:
             stored_move()
+            moves_list.append(stored_char)
+        if len(moves_list) > 0:
+            self._moves_history.append(moves_list)
 
     @staticmethod
     def _remove_whitespace(input_str: str) -> str:
@@ -85,5 +108,30 @@ class CubeSimulator:
         move()
         move()
 
+    def undo_moves_sequence(self) -> None:
+        """
+        Undoes the most recent sequence of moves.
+
+        :raises ValueError: If there is no moves sequence left to undo.
+        """
+        if len(self._moves_history) == 0:
+            raise ValueError("No moves sequence to undo.")
+
+        previous_moves_sequence: list[str] = self._moves_history.pop()
+        # Go backwards through the moves in the sequence
+        while len(previous_moves_sequence) > 0:
+            previous_move: str = previous_moves_sequence.pop()
+            # Perform the inverse of the move
+            if len(previous_move) == 1:
+                self._moves[previous_move](prime=True)
+            elif previous_move[1] == "'":
+                self._moves[previous_move[0]]()
+            elif previous_move[1] == "2":
+                self.move_twice(self._moves[previous_move[0]])
+
     def display_cube(self) -> None:
         self._cube.display_cube()
+
+    def reset_cube(self) -> None:
+        self._cube.reset()
+        self._moves_history.clear()
