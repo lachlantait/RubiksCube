@@ -1,4 +1,14 @@
-""" Tests for all the classes in this project. Not very comprehensive. """
+"""
+Tests for all the classes in this project. Not very comprehensive.
+
+Strategy for testing 'patterns':
+- Sourced pattern algorithms from https://ruwix.com/the-rubiks-cube/rubiks-cube-patterns-algorithms/
+- Line up my IRL cube so that the colours are in the same position as the default cube layout in this program
+- Perform the algorithm on my cube
+- Write down a string representation of the resulting cube layout
+- The tests in this file perform the algorithm on a cube, and see if the resulting layout matches a cube created from
+    the string representation I gave.
+"""
 
 import unittest
 
@@ -10,6 +20,7 @@ from cube_game import CubeGame2D
 __author__ = "Lachlan Tait"
 
 
+# TODO: Ideally need to make sure every move (and its variants) is tested
 # A list of (<pattern name>, <algorithm>, <expected cube layout>) tuples:
 patterns: list[tuple[str, str, str]] = [
     ("Checkerboard 1",
@@ -30,7 +41,7 @@ patterns: list[tuple[str, str, str]] = [
       "WYWYWYWYW"
       "YWYWYWYWY")
      ),
-    ("Cube in a cube",
+    ("Cube in the cube",
      "F L F U' R U F2 L2 U' L' B D' B' L2 U",
      ("YYYGGYGGY"
       "BRRBRRBBB"
@@ -38,6 +49,15 @@ patterns: list[tuple[str, str, str]] = [
       "GGGGOOGOO"
       "RRRRWWRWW"
       "OOOYYOYYO")
+     ),
+    ("Cube in a cube in a cube",
+     "U' L' U' F' R2 B' R F U B2 U B' L U' F U R F'",
+     ("OOOGGOYGO"
+      "WRBWRRWWW"
+      "WBRBBRRRR"
+      "YYYYOOYOG"
+      "BBBBWWBWR"
+      "GGGYYGOYG")
      )
 ]
 
