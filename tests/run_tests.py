@@ -12,10 +12,10 @@ Strategy for testing 'patterns':
 
 import unittest
 
-from cube import RowMove, ColumnMove, Colour
-from cube_text_ui_2d import CubeTextUI2D
-from cube_simulator_3x3 import CubeSimulator3x3
-from cube_game import CubeGame2D
+from src.cube import RowMove, ColumnMove, Colour
+from src.cube_text_ui_2d import CubeTextUI2D
+from src.cube_simulator_3x3 import CubeSimulator3x3
+from src.cube_game import CubeGame2D
 
 __author__ = "Lachlan Tait"
 

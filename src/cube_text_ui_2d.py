@@ -1,6 +1,6 @@
 from termcolor import colored
 
-from cube import Cube, Colour
+from .cube import Cube, Colour
 
 __author__ = "Lachlan Tait"
 
@@ -94,8 +94,3 @@ class CubeTextUI2D(Cube):
             case _:
                 colour = "black"
         return colored("■", colour)
-
-
-if __name__ == '__main__':
-    test_cube = CubeTextUI2D(3)
-    test_cube.display_cube()
