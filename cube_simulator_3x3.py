@@ -3,6 +3,8 @@ from typing import Callable, Type
 from cube import Cube, RowMove, ColumnMove
 from cube_simulator import CubeSimulator
 
+__author__ = "Lachlan Tait"
+
 
 class CubeSimulator3x3(CubeSimulator):
     """
@@ -15,7 +17,7 @@ class CubeSimulator3x3(CubeSimulator):
         Initialises the cube using the Cube subclass given.
         Cube subclasses can each have their own method of displaying the cube.
         """
-        super().__init__(cube_subclass, 3)
+        super().__init__(cube_subclass, 3, scramble_move_count=22)
         self._moves: dict[str, Callable] = {
             "U": self.move_U,
             "D": self.move_D,
@@ -55,7 +57,7 @@ class CubeSimulator3x3(CubeSimulator):
 
     def move_F(self, *, prime: bool = False) -> None:
         direction = ColumnMove.DOWN if not prime else ColumnMove.UP
-        self._cube.rotate_z(3, direction)
+        self._cube.rotate_z(1, direction)
 
     def move_B(self, *, prime: bool = False) -> None:
         direction = ColumnMove.UP if not prime else ColumnMove.DOWN
@@ -107,7 +109,7 @@ class CubeSimulator3x3(CubeSimulator):
 
     def move_z(self, *, prime: bool = False) -> None:
         self.move_F(prime=prime)
-        self.move_d(prime=not prime)
+        self.move_b(prime=not prime)
 
 
 if __name__ == '__main__':
