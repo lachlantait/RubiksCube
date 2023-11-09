@@ -147,11 +147,11 @@ class CubeGame2D(CubeGame):
         toggle_case_state = "X" if self._is_case_toggled else " "
         option_width = (self.UI_WIDTH // 2) - 3
         print("| " + f"[{self.QUIT_KEY}]: Quit".ljust(option_width)
-              + "| " + f"[{self.RESET_KEY}]: Reset cube".ljust(option_width) + "|")
+              + "| " + f"[{self.RESET_KEY}]: Reset cube".ljust(option_width) + " |")
         print("| " + f"[{self.SCRAMBLE_KEY}]: Scramble cube".ljust(option_width)
-              + "| " + f"[{self.UNDO_KEY}]: Undo last sequence".ljust(option_width) + "|")
+              + "| " + f"[{self.UNDO_KEY}]: Undo last sequence".ljust(option_width) + " |")
         print("| " + f"[{self.HISTORY_KEY}]: Show moves history".ljust(option_width)
-              + "| " + f"[{self.SHOW_INVERSE_KEY}]: Show inverse sequence".ljust(option_width) + "|")
+              + "| " + f"[{self.SHOW_INVERSE_KEY}]: Show inverse sequence".ljust(option_width) + " |")
         print("| " + f"[{self.TOGGLE_CASE_KEY}]: Toggle case [{toggle_case_state}]".ljust(option_width) + "|")
 
     def _display_moves(self) -> None:
