@@ -4,8 +4,8 @@ from typing import Type
 from abc import ABC, abstractmethod
 import os
 
-from cube_simulator import CubeSimulator
-from cube import Cube
+from .cube_simulator import CubeSimulator
+from .cube import Cube
 
 __author__ = "Lachlan Tait"
 
@@ -172,11 +172,3 @@ class CubeGame2D(CubeGame):
     @staticmethod
     def _clear_screen() -> None:
         os.system("cls" if os.name == "nt" else "clear")
-
-
-if __name__ == '__main__':
-    from cube_simulator_3x3 import CubeSimulator3x3
-    from cube_text_ui_2d import CubeTextUI2D
-
-    game = CubeGame2D(CubeSimulator3x3, CubeTextUI2D)
-    game.play_game()

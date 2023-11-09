@@ -1,7 +1,7 @@
 from typing import Type, Callable
 import random
 
-from cube import Cube
+from .cube import Cube
 
 __author__ = "Lachlan Tait"
 

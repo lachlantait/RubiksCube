@@ -1,7 +1,7 @@
 from typing import Callable, Type
 
-from cube import Cube, RowMove, ColumnMove
-from cube_simulator import CubeSimulator
+from .cube import Cube, RowMove, ColumnMove
+from .cube_simulator import CubeSimulator
 
 __author__ = "Lachlan Tait"
 
@@ -110,10 +110,3 @@ class CubeSimulator3x3(CubeSimulator):
     def move_z(self, *, prime: bool = False) -> None:
         self.move_F(prime=prime)
         self.move_b(prime=not prime)
-
-
-if __name__ == '__main__':
-    from cube_text_ui_2d import CubeTextUI2D
-    test_sim = CubeSimulator3x3(CubeTextUI2D)
-    test_sim.perform_moves("M2E2S2")
-    test_sim.display_cube()
