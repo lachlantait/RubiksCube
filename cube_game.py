@@ -1,6 +1,7 @@
 from typing import Type
 from abc import ABC, abstractmethod
 import os
+import random
 
 from cube_simulator import CubeSimulator
 from cube import Cube
@@ -25,12 +26,15 @@ class CubeGame2D(CubeGame):
 
     QUIT_KEY = "Q"
     RESET_KEY = "W"
+    SCRAMBLE_KEY = "O"
     UNDO_KEY = "P"
     HISTORY_KEY = "H"
     SHOW_INVERSE_KEY = "G"
     TOGGLE_CASE_KEY = "T"
 
     MOVES_INSTRUCTION = "Type in a sequence of moves and press ENTER"
+
+    SCRAMBLE_MOVE_COUNT = 22
 
     def __init__(self, simulator_subclass: Type[CubeSimulator], cube_subclass: Type[Cube]) -> None:
         """
@@ -67,6 +71,9 @@ class CubeGame2D(CubeGame):
         elif user_input_upper == CubeGame2D.RESET_KEY:
             self._simulator.reset_cube()
             self._message = "Cube reset"
+
+        elif user_input_upper == CubeGame2D.SCRAMBLE_KEY:
+            self._scramble()
 
         elif user_input_upper == CubeGame2D.UNDO_KEY:
             self._undo_sequence()
@@ -120,6 +127,15 @@ class CubeGame2D(CubeGame):
         except ValueError as e:
             self._message = e  # An error message will be printed next time the screen is displayed
 
+    def _scramble(self) -> None:
+        scramble_sequence = ""
+        for _ in range(self.SCRAMBLE_MOVE_COUNT):
+            random_move: str = random.choice(self._simulator.get_moves())
+            random_move += random.choice(["", "'", "2"])
+            scramble_sequence += random_move
+        self._simulator.perform_moves(scramble_sequence, record=False)
+        self._message = "Cube scrambled"
+
     def _display_title(self) -> None:
         size = self._simulator.get_size()
         print(CubeGame2D.HORIZONTAL_BORDER)
@@ -132,10 +148,11 @@ class CubeGame2D(CubeGame):
         option_width = (self.UI_WIDTH // 2) - 3
         print("| " + f"[{self.QUIT_KEY}]: Quit".ljust(option_width)
               + "| " + f"[{self.RESET_KEY}]: Reset cube".ljust(option_width) + "|")
-        print("| " + f"[{self.UNDO_KEY}]: Undo last sequence".ljust(option_width)
-              + "| " + f"[{self.HISTORY_KEY}]: Show moves history".ljust(option_width) + "|")
-        print("| " + f"[{self.SHOW_INVERSE_KEY}]: Show inverse sequence".ljust(option_width)
-              + "| " + f"[{self.TOGGLE_CASE_KEY}]: Toggle case [{toggle_case_state}]".ljust(option_width) + "|")
+        print("| " + f"[{self.SCRAMBLE_KEY}]: Scramble cube".ljust(option_width)
+              + "| " + f"[{self.UNDO_KEY}]: Undo last sequence".ljust(option_width) + "|")
+        print("| " + f"[{self.HISTORY_KEY}]: Show moves history".ljust(option_width)
+              + "| " + f"[{self.SHOW_INVERSE_KEY}]: Show inverse sequence".ljust(option_width) + "|")
+        print("| " + f"[{self.TOGGLE_CASE_KEY}]: Toggle case [{toggle_case_state}]".ljust(option_width) + "|")
 
     def _display_moves(self) -> None:
         print("MOVES:")

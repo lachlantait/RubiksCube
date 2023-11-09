@@ -37,6 +37,7 @@ class CubeSimulator:
         return self._size
 
     def get_moves(self) -> list[str]:
+        """ Returns the list of moves that can be performed (without modified versions e.g. U' and U2). """
         return list(self._moves.keys())
 
     def get_moves_history(self) -> list[list[str]]:
