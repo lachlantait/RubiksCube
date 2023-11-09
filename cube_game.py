@@ -37,8 +37,8 @@ class CubeGame2D(CubeGame):
         The Cube subclass provided should be able to display a cube via console text output.
         """
         super().__init__(simulator_subclass, cube_subclass)
-        self._is_case_toggled: bool = False
         self._message: str = ""
+        self._is_case_toggled: bool = False
         self._has_quit: bool = False
 
     def play_game(self) -> None:
@@ -82,8 +82,8 @@ class CubeGame2D(CubeGame):
     def _undo_sequence(self) -> None:
         previous_moves_sequence = self._simulator.get_most_recent_moves_sequence()
         if previous_moves_sequence is not None:
-            self._simulator.undo_moves_sequence()
-            self._message = "Previous moves sequence reverted: " + previous_moves_sequence
+            inverse_sequence = self._simulator.undo_moves_sequence()
+            self._message = f"Previous moves sequence {previous_moves_sequence} reverted using {inverse_sequence}"
         else:
             self._message = "No move sequence to undo"
 
@@ -115,11 +115,11 @@ class CubeGame2D(CubeGame):
         print("OPTIONS:")
         toggle_case_state = "X" if self._is_case_toggled else " "
         option_width = (self.UI_WIDTH // 2) - 3
-        print("| " + f"[{CubeGame2D.QUIT_KEY}]: Quit".ljust(option_width)
-              + "| " + f"[{CubeGame2D.RESET_KEY}]: Reset cube".ljust(option_width) + "|")
-        print("| " + f"[{CubeGame2D.UNDO_KEY}]: Undo last sequence".ljust(option_width)
-              + "| " + f"[{CubeGame2D.HISTORY_KEY}]: Show moves history".ljust(option_width) + "|")
-        print("| " + f"[{CubeGame2D.TOGGLE_CASE_KEY}]: Toggle case [{toggle_case_state}]".ljust(option_width) + "|")
+        print("| " + f"[{self.QUIT_KEY}]: Quit".ljust(option_width)
+              + "| " + f"[{self.RESET_KEY}]: Reset cube".ljust(option_width) + "|")
+        print("| " + f"[{self.UNDO_KEY}]: Undo last sequence".ljust(option_width)
+              + "| " + f"[{self.HISTORY_KEY}]: Show moves history".ljust(option_width) + "|")
+        print("| " + f"[{self.TOGGLE_CASE_KEY}]: Toggle case [{toggle_case_state}]".ljust(option_width) + "|")
 
     def _display_moves(self) -> None:
         print("MOVES:")

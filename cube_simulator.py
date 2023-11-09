@@ -50,12 +50,13 @@ class CubeSimulator:
             return "".join(self._moves_history[-1])
         return None
 
-    def perform_moves(self, moves_string: str) -> None:
+    def perform_moves(self, moves_string: str, *, record: bool = True) -> None:
         """
         Reads the string given and performs all moves on the cube.
 
         :param moves_string: A string representing a sequence of moves to perform.
             e.g. "RUR'U'" means R U R' U'.
+        :param record: An optional keyword argument. If True, records the sequence in the history. Defaults to True.
         :raises ValueError: If a modifier is given with no move before it to perform it on,
             or if an invalid character is given.
         """
@@ -91,7 +92,7 @@ class CubeSimulator:
         if stored_move:
             stored_move()
             moves_list.append(stored_char)
-        if len(moves_list) > 0:
+        if record and len(moves_list) > 0:
             self._moves_history.append(moves_list)
 
     @staticmethod
@@ -108,26 +109,38 @@ class CubeSimulator:
         move()
         move()
 
-    def undo_moves_sequence(self) -> None:
+    def undo_moves_sequence(self) -> str:
         """
         Undoes the most recent sequence of moves.
 
+        :return: The sequence of moves used to undo the most recent sequence, as a string.
         :raises ValueError: If there is no moves sequence left to undo.
         """
         if len(self._moves_history) == 0:
             raise ValueError("No moves sequence to undo.")
-
         previous_moves_sequence: list[str] = self._moves_history.pop()
-        # Go backwards through the moves in the sequence
-        while len(previous_moves_sequence) > 0:
-            previous_move: str = previous_moves_sequence.pop()
-            # Perform the inverse of the move
-            if len(previous_move) == 1:
-                self._moves[previous_move](prime=True)
-            elif previous_move[1] == "'":
-                self._moves[previous_move[0]]()
-            elif previous_move[1] == "2":
-                self.move_twice(self._moves[previous_move[0]])
+        inverse_sequence = self.get_inverse_sequence(previous_moves_sequence)
+        self.perform_moves(inverse_sequence, record=False)
+        return inverse_sequence
+
+    @staticmethod
+    def get_inverse_sequence(moves_sequence: list[str]) -> str:
+        """
+        Reads the moves sequence given and returns the sequence needed to undo that sequence.
+
+        :param moves_sequence: A list of strings representing individual moves
+        :return: A string of moves, in the same format that could be passed to self.perform_moves
+        """
+        inverse_sequence = ""
+        for i in range(len(moves_sequence) - 1, -1, -1):
+            move: str = moves_sequence[i]
+            if len(move) == 1:
+                inverse_sequence += move + "'"
+            elif move[1] == "'":
+                inverse_sequence += move[0]
+            elif move[1] == "2":
+                inverse_sequence += move
+        return inverse_sequence
 
     def display_cube(self) -> None:
         self._cube.display_cube()
