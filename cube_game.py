@@ -68,24 +68,33 @@ class CubeGame2D(CubeGame):
             self._message = "Cube reset"
 
         elif user_input_upper == CubeGame2D.UNDO_KEY:
-            previous_moves_sequence = self._simulator.get_most_recent_moves_sequence()
-            self._simulator.undo_moves_sequence()
-            self._message = "Previous moves sequence reverted: " + previous_moves_sequence
+            self._undo_sequence()
 
         elif user_input_upper == CubeGame2D.HISTORY_KEY:
-            moves_history = self._simulator.get_moves_history()
-            self._message = "Moves history:"
-            if len(moves_history) > 0:
-                for moves_sequence in moves_history:
-                    self._message += "\n- " + moves_sequence
-            else:
-                self._message += "\n-"
+            self._display_history()
 
         elif user_input_upper == CubeGame2D.TOGGLE_CASE_KEY:
             self._is_case_toggled = not self._is_case_toggled
 
         else:
             self._perform_moves(user_input)
+
+    def _undo_sequence(self) -> None:
+        previous_moves_sequence = self._simulator.get_most_recent_moves_sequence()
+        if previous_moves_sequence is not None:
+            self._simulator.undo_moves_sequence()
+            self._message = "Previous moves sequence reverted: " + previous_moves_sequence
+        else:
+            self._message = "No move sequence to undo"
+
+    def _display_history(self) -> None:
+        moves_history = self._simulator.get_moves_history()
+        self._message = "Moves history:"
+        if len(moves_history) > 0:
+            for moves_sequence in moves_history:
+                self._message += "\n- " + moves_sequence
+        else:
+            self._message += "\n-"
 
     def _perform_moves(self, moves_string: str) -> None:
         if self._is_case_toggled:
