@@ -56,7 +56,7 @@ extensible for future.
 
 Here are some details on the main classes in the project:
 
-### Cube (in cube.py)
+### Cube (in [cube.py](https://github.com/lachlantait/RubiksCube/blob/master/src/cube.py))
 The cube is represented as a 3-dimensional list, with the outermost list being the 6 faces of the cube,
 and each face is a 2-dimensional list that represents each individual tile in that face.
 
@@ -70,12 +70,12 @@ values and prints output of the corresponding colour.
 Support is there for cubes of different sizes like 2x2, 4x4, etc., but I haven't tested this much, or added
 an interface for the user to interact with cubes of these sizes.
 
-### CubeSimulator (in cube_simulator.py)
+### CubeSimulator (in [cube_simulator.py](https://github.com/lachlantait/RubiksCube/blob/master/src/cube_simulator.py))
 This class adds an interface for performing moves with standard Rubik's Cube notation. These methods call the
 rotate_(x/y/z) methods in the Cube class. All other functionality in the program for working with the cube is
 provided in this class.
 
-### CubeGame (in cube_game.py)
+### CubeGame (in [cube_game.py](https://github.com/lachlantait/RubiksCube/blob/master/src/cube_game.py))
 This class provides the user interface, and calls the appropriate methods on the CubeSimulator class.
 
 ## To-do / Ideas / Future Features
