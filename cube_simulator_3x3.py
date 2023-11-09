@@ -3,6 +3,8 @@ from typing import Callable, Type
 from cube import Cube, RowMove, ColumnMove
 from cube_simulator import CubeSimulator
 
+__author__ = "Lachlan Tait"
+
 
 class CubeSimulator3x3(CubeSimulator):
     """
@@ -15,7 +17,7 @@ class CubeSimulator3x3(CubeSimulator):
         Initialises the cube using the Cube subclass given.
         Cube subclasses can each have their own method of displaying the cube.
         """
-        super().__init__(cube_subclass, 3)
+        super().__init__(cube_subclass, 3, scramble_move_count=22)
         self._moves: dict[str, Callable] = {
             "U": self.move_U,
             "D": self.move_D,

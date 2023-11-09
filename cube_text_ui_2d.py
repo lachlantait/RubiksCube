@@ -2,6 +2,8 @@ from termcolor import colored
 
 from cube import Cube, Colour
 
+__author__ = "Lachlan Tait"
+
 
 class CubeTextUI2D(Cube):
     """

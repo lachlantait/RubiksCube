@@ -1,5 +1,5 @@
 """
-Rubik's Cube simulator.
+Classes for simulating a Rubik's Cube.
 """
 
 from __future__ import annotations

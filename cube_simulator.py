@@ -1,6 +1,9 @@
 from typing import Type, Callable
+import random
 
 from cube import Cube
+
+__author__ = "Lachlan Tait"
 
 
 class CubeSimulator:
@@ -16,11 +19,13 @@ class CubeSimulator:
     This class itself cannot be instantiated, only its subclasses. This is enforced manually in __init__.
     """
 
-    def __init__(self, cube_subclass: Type[Cube], size: int = 0) -> None:
+    def __init__(self, cube_subclass: Type[Cube], size: int = 0, scramble_move_count: int = 10) -> None:
         """
-        Initialises the cube using the Cube subclass and the size given.
-        Cube subclasses can each have their own method of displaying the cube.
+        Initialises the simulator.
 
+        :param cube_subclass: The type of the cube. Cube subclasses each have their own method of displaying the cube.
+        :param size: The size of the cube. E.g. 3x3
+        :param scramble_move_count: The amount of random moves used to scramble the cube.
         :raises TypeError: If called on CubeSimulator and not from a subclass.
         """
         if type(self) is CubeSimulator:
@@ -29,6 +34,7 @@ class CubeSimulator:
         self._size: int = size
         self._moves: dict[str, Callable] = {}
         self._moves_history: list[list[str]] = []
+        self._SCRAMBLE_MOVE_COUNT = scramble_move_count
 
     def get_cube(self) -> Cube:
         return self._cube
@@ -139,6 +145,15 @@ class CubeSimulator:
             elif move[1] == "2":
                 inverse_sequence += move
         return inverse_sequence
+
+    def scramble(self) -> None:
+        """ Scrambles the cube. """
+        scramble_sequence = ""
+        for _ in range(self._SCRAMBLE_MOVE_COUNT):
+            random_move: str = random.choice(self.get_moves())
+            random_move += random.choice(["", "'", "2"])
+            scramble_sequence += random_move
+        self.perform_moves(scramble_sequence, record=False)
 
     def display_cube(self) -> None:
         self._cube.display_cube()

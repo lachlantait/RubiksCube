@@ -1,10 +1,13 @@
+""" Classes in this file provide the game interface to the user. """
+
 from typing import Type
 from abc import ABC, abstractmethod
 import os
-import random
 
 from cube_simulator import CubeSimulator
 from cube import Cube
+
+__author__ = "Lachlan Tait"
 
 
 class CubeGame(ABC):
@@ -33,8 +36,6 @@ class CubeGame2D(CubeGame):
     TOGGLE_CASE_KEY = "T"
 
     MOVES_INSTRUCTION = "Type in a sequence of moves and press ENTER"
-
-    SCRAMBLE_MOVE_COUNT = 22
 
     def __init__(self, simulator_subclass: Type[CubeSimulator], cube_subclass: Type[Cube]) -> None:
         """
@@ -128,12 +129,7 @@ class CubeGame2D(CubeGame):
             self._message = e  # An error message will be printed next time the screen is displayed
 
     def _scramble(self) -> None:
-        scramble_sequence = ""
-        for _ in range(self.SCRAMBLE_MOVE_COUNT):
-            random_move: str = random.choice(self._simulator.get_moves())
-            random_move += random.choice(["", "'", "2"])
-            scramble_sequence += random_move
-        self._simulator.perform_moves(scramble_sequence, record=False)
+        self._simulator.scramble()
         self._message = "Cube scrambled"
 
     def _display_title(self) -> None:
@@ -184,4 +180,3 @@ if __name__ == '__main__':
 
     game = CubeGame2D(CubeSimulator3x3, CubeTextUI2D)
     game.play_game()
-
