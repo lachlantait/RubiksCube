@@ -27,6 +27,7 @@ class CubeGame2D(CubeGame):
     RESET_KEY = "W"
     UNDO_KEY = "P"
     HISTORY_KEY = "H"
+    SHOW_INVERSE_KEY = "G"
     TOGGLE_CASE_KEY = "T"
 
     MOVES_INSTRUCTION = "Type in a sequence of moves and press ENTER"
@@ -76,12 +77,16 @@ class CubeGame2D(CubeGame):
         elif user_input_upper == CubeGame2D.TOGGLE_CASE_KEY:
             self._is_case_toggled = not self._is_case_toggled
 
+        elif user_input_upper == CubeGame2D.SHOW_INVERSE_KEY:
+            self._show_inverse_sequence()
+
         else:
             self._perform_moves(user_input)
 
     def _undo_sequence(self) -> None:
-        previous_moves_sequence = self._simulator.get_most_recent_moves_sequence()
+        previous_moves_sequence = self._simulator.get_previous_moves_sequence()
         if previous_moves_sequence is not None:
+            previous_moves_sequence = "".join(previous_moves_sequence)
             inverse_sequence = self._simulator.undo_moves_sequence()
             self._message = f"Previous moves sequence {previous_moves_sequence} reverted using {inverse_sequence}"
         else:
@@ -92,9 +97,19 @@ class CubeGame2D(CubeGame):
         self._message = "Moves history:"
         if len(moves_history) > 0:
             for moves_sequence in moves_history:
-                self._message += "\n- " + moves_sequence
+                self._message += "\n- " + "".join(moves_sequence)
         else:
             self._message += "\n-"
+
+    def _show_inverse_sequence(self) -> None:
+        """ Displays the inverse of the most recent sequence. """
+        previous_sequence = self._simulator.get_previous_moves_sequence()
+        if previous_sequence is not None:
+            previous_sequence_string = "".join(previous_sequence)
+            inverse_sequence = self._simulator.get_inverse_sequence(previous_sequence)
+            self._message = f"Inverse of {previous_sequence_string}: {inverse_sequence}"
+        else:
+            self._message = "There is no previous sequence to show the inverse of"
 
     def _perform_moves(self, moves_string: str) -> None:
         if self._is_case_toggled:
@@ -119,7 +134,8 @@ class CubeGame2D(CubeGame):
               + "| " + f"[{self.RESET_KEY}]: Reset cube".ljust(option_width) + "|")
         print("| " + f"[{self.UNDO_KEY}]: Undo last sequence".ljust(option_width)
               + "| " + f"[{self.HISTORY_KEY}]: Show moves history".ljust(option_width) + "|")
-        print("| " + f"[{self.TOGGLE_CASE_KEY}]: Toggle case [{toggle_case_state}]".ljust(option_width) + "|")
+        print("| " + f"[{self.SHOW_INVERSE_KEY}]: Show inverse sequence".ljust(option_width)
+              + "| " + f"[{self.TOGGLE_CASE_KEY}]: Toggle case [{toggle_case_state}]".ljust(option_width) + "|")
 
     def _display_moves(self) -> None:
         print("MOVES:")
@@ -132,9 +148,9 @@ class CubeGame2D(CubeGame):
     def _display_message(self) -> None:
         """ Displays the message that is currently set, then clears it. """
         if self._message == "":
-            most_recent_moves_sequence = self._simulator.get_most_recent_moves_sequence()
+            most_recent_moves_sequence = self._simulator.get_previous_moves_sequence()
             if most_recent_moves_sequence is not None:
-                self._message = "Last move: " + most_recent_moves_sequence
+                self._message = "Last move: " + "".join(most_recent_moves_sequence)
             else:
                 self._message = CubeGame2D.MOVES_INSTRUCTION
         print(self._message)

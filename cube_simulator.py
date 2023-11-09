@@ -39,15 +39,12 @@ class CubeSimulator:
     def get_moves(self) -> list[str]:
         return list(self._moves.keys())
 
-    def get_moves_history(self) -> list[str]:
-        output = []
-        for moves_list in self._moves_history:
-            output.append("".join(moves_list))
-        return output
+    def get_moves_history(self) -> list[list[str]]:
+        return self._moves_history
 
-    def get_most_recent_moves_sequence(self) -> str | None:
+    def get_previous_moves_sequence(self) -> list[str] | None:
         if len(self._moves_history) > 0:
-            return "".join(self._moves_history[-1])
+            return self._moves_history[-1]
         return None
 
     def perform_moves(self, moves_string: str, *, record: bool = True) -> None:
