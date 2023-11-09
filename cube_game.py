@@ -20,7 +20,8 @@ class CubeGame(ABC):
 class CubeGame2D(CubeGame):
     """ Rubik's Cube simulator game with a text-based, console user-interface. """
 
-    HORIZONTAL_BORDER = "=" * 60
+    UI_WIDTH = 60
+    HORIZONTAL_BORDER = "=" * UI_WIDTH
 
     QUIT_KEY = "Q"
     RESET_KEY = "W"
@@ -104,12 +105,12 @@ class CubeGame2D(CubeGame):
     def _display_options(self) -> None:
         print("OPTIONS:")
         toggle_case_state = "X" if self._is_case_toggled else " "
-        # TODO: Have options lined up
-        print(f"| [{CubeGame2D.QUIT_KEY}]: Quit "
-              f"| [{CubeGame2D.RESET_KEY}]: Reset cube |")
-        print(f"| [{CubeGame2D.UNDO_KEY}]: Undo last sequence "
-              f"| [{CubeGame2D.HISTORY_KEY}]: Show moves history |")
-        print(f"| [{CubeGame2D.TOGGLE_CASE_KEY}]: Toggle case [{toggle_case_state}] |")
+        option_width = (self.UI_WIDTH // 2) - 3
+        print("| " + f"[{CubeGame2D.QUIT_KEY}]: Quit".ljust(option_width)
+              + "| " + f"[{CubeGame2D.RESET_KEY}]: Reset cube".ljust(option_width) + "|")
+        print("| " + f"[{CubeGame2D.UNDO_KEY}]: Undo last sequence".ljust(option_width)
+              + "| " + f"[{CubeGame2D.HISTORY_KEY}]: Show moves history".ljust(option_width) + "|")
+        print("| " + f"[{CubeGame2D.TOGGLE_CASE_KEY}]: Toggle case [{toggle_case_state}]".ljust(option_width) + "|")
 
     def _display_moves(self) -> None:
         print("MOVES:")
